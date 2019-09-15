@@ -4,6 +4,8 @@
 #include "eqapp_alwaysattack.h"
 #include "eqapp_alwayshotbutton.h"
 #include "eqapp_autogroup.h"
+#include "eqapp_autologin.h"
+#include "eqapp_autotrade.h"
 #include "eqapp_bazaarbot.h"
 #include "eqapp_bazaarfilter.h"
 #include "eqapp_boxchat.h"
@@ -61,7 +63,9 @@ void EQAPP_LoadOptions()
 
     EQAPP_LoadOption<int>(g_EQAppKillSwitchKey, "iKillSwitchKey", pt);
 
+#ifdef EQ_FEATURE_CollisionCallbackForActors
     EQAPP_LoadOption<bool>(g_ActorCollisionIsEnabled, "bActorCollision", pt);
+#endif // EQ_FEATURE_CollisionCallbackForActors
 
     EQAPP_LoadOption<bool>(g_AlwaysAttackIsEnabled, "bAlwaysAttack", pt);
     EQAPP_LoadOption<EQApp::TimerInterval>(g_AlwaysAttackTimerInterval, "iAlwaysAttackTimerInterval", pt);
@@ -77,6 +81,10 @@ void EQAPP_LoadOptions()
     EQAPP_LoadOption<bool>(g_AutoGroupIsEnabled, "bAutoGroup", pt);
     EQAPP_LoadOption<EQApp::TimerInterval>(g_AutoGroupTimerInterval, "iAutoGroupTimerInterval", pt);
 
+    EQAPP_LoadOption<bool>(g_AutoLoginIsEnabled, "bAutoLogin", pt);
+    EQAPP_LoadOption<EQApp::TimerInterval>(g_AutoLoginTimerInterval, "iAutoLoginTimerInterval", pt);
+
+#ifdef EQ_FEATURE_BAZAAR
     EQAPP_LoadOption<bool>(g_BazaarBotIsEnabled, "bBazaarBot", pt);
     EQAPP_LoadOption<EQApp::TimerInterval>(g_BazaarBotFindItemsTimerInterval, "iBazaarBotFindItemsTimerInterval", pt);
     EQAPP_LoadOption<EQApp::TimerInterval>(g_BazaarBotBuyItemsTimerInterval, "iBazaarBotBuyItemsTimerInterval", pt);
@@ -86,6 +94,7 @@ void EQAPP_LoadOptions()
     EQAPP_LoadOption<bool>(g_BazaarFilterBeepIsEnabled, "bBazaarFilterBeep", pt);
     EQAPP_LoadOption<uint32_t>(g_BazaarFilterItemPriceMinimum, "iBazaarFilterItemPriceMinimum", pt);
     EQAPP_LoadOption<uint32_t>(g_BazaarFilterItemPriceMaximum, "iBazaarFilterItemPriceMaximum", pt);
+#endif // EQ_FEATURE_BAZAAR
 
     EQAPP_LoadOption<bool>(g_BoxChatIsEnabled, "bBoxChat", pt);
     EQAPP_LoadOption<bool>(g_BoxChatAutoConnectIsEnabled, "bBoxChatAutoConnect", pt);
@@ -125,7 +134,9 @@ void EQAPP_LoadOptions()
 
     EQAPP_LoadOption<bool>(g_FPSIsEnabled, "bFPS", pt);
 
+#ifdef EQ_FEATURE_GUI
     EQAPP_LoadOption<bool>(g_GUIIsEnabled, "bGUI", pt);
+#endif // EQ_FEATURE_GUI
 
     EQAPP_LoadOption<bool>(g_HUDIsEnabled, "bHUD", pt);
     EQAPP_LoadOption<uint32_t>(g_HUDXDefault, "iHUDX", pt);
@@ -140,11 +151,13 @@ void EQAPP_LoadOptions()
     EQAPP_LoadOption<uint32_t>(g_SleepIntervalForeground, "iSleepIntervalForeground", pt);
     EQAPP_LoadOption<uint32_t>(g_SleepIntervalBackground, "iSleepIntervalBackground", pt);
 
+#ifdef EQ_FEATURE_CEverQuest__StartCasting
     EQAPP_LoadOption<bool>(g_SpawnCastSpellIsEnabled, "bSpawnCastSpell", pt);
     EQAPP_LoadOption<bool>(g_SpawnCastSpellGroupChatIsEnabled, "bSpawnCastSpellGroupChat", pt);
     EQAPP_LoadOption<bool>(g_SpawnCastSpellESPIsEnabled, "bSpawnCastSpellESP", pt);
     EQAPP_LoadOption<uint32_t>(g_SpawnCastSpellDrawTextX, "iSpawnCastSpellDrawTextX", pt);
     EQAPP_LoadOption<uint32_t>(g_SpawnCastSpellDrawTextY, "iSpawnCastSpellDrawTextY", pt);
+#endif // EQ_FEATURE_CEverQuest__StartCasting
 
     EQAPP_LoadOption<bool>(g_SpeedIsEnabled, "bSpeed", pt);
     EQAPP_LoadOption<float>(g_SpeedMultiplier, "fSpeedMultiplier", pt);

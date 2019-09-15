@@ -1,3 +1,13 @@
+#undef EQ_FEATURE_BAZAAR
+#undef EQ_FEATURE_GUI
+#undef EQ_FEATURE_CREATE_AND_DELETE_ACTORS
+#define EQ_FEATURE_CollisionCallbackForActors
+#undef EQ_FEATURE_DoSpellEffect
+#undef EQ_FEATURE_EQPlayer__FollowPlayerAI
+#define EQ_FEATURE_EQPlayer__UpdateItemSlot
+#undef EQ_FEATURE_EQSwitch__ChangeState
+#undef EQ_FEATURE_CEverQuest__StartCasting
+
 #include <algorithm>
 #include <array>
 #include <bitset>
@@ -11,6 +21,7 @@
 #include <memory>
 #include <numeric>
 #include <random>
+#include <regex>
 #include <set>
 #include <string>
 #include <sstream>
@@ -18,7 +29,7 @@
 #include <vector>
 
 #include <filesystem>
-namespace std__filesystem = std::experimental::filesystem::v1; // C++17 not available yet
+namespace std__filesystem = std::experimental::filesystem::v1; // not available yet
 
 #include <cstdio>
 #include <cstdlib>
@@ -56,6 +67,7 @@ namespace std__filesystem = std::experimental::filesystem::v1; // C++17 not avai
 // imgui
 // https://github.com/ocornut/imgui
 #include "imgui.h"
+#include "misc/cpp/imgui_stdlib.h"
 #include "imgui_impl_dx9.h"
 #include "imgui_impl_win32.h"
 
@@ -74,6 +86,7 @@ namespace std__filesystem = std::experimental::filesystem::v1; // C++17 not avai
 
 // libfmt
 // https://github.com/fmtlib/fmt
+#define FMT_HEADER_ONLY
 #include "fmt/format.h"
 
 // boost
@@ -97,6 +110,8 @@ namespace std__filesystem = std::experimental::filesystem::v1; // C++17 not avai
 #include "eqapp_alwaysattack.h"
 #include "eqapp_alwayshotbutton.h"
 #include "eqapp_autogroup.h"
+#include "eqapp_autologin.h"
+#include "eqapp_autotrade.h"
 #include "eqapp_bazaarbot.h"
 #include "eqapp_bazaarfilter.h"
 #include "eqapp_boxchat.h"
@@ -127,9 +142,14 @@ namespace std__filesystem = std::experimental::filesystem::v1; // C++17 not avai
 
 void EQAPP_Load()
 {
+#ifdef EQ_FEATURE_GUI
     g_GUIIsLoaded = EQAPP_GUI_Load();
+#endif // EQ_FEATURE_GUI
 
+#ifdef EQ_FEATURE_CollisionCallbackForActors
     EQAPP_ActorCollision_Load();
+#endif // EQ_FEATURE_CollisionCallbackForActors
+    EQAPP_AutoLogin_Load();
     EQAPP_WaypointList_Load();
     EQAPP_NamedSpawns_Load();
 
@@ -149,6 +169,25 @@ void EQAPP_Load()
             }
         }
     }
+
+    auto render = EQ_GetRender();
+    if (render != NULL)
+    {
+        std::cout << "CRender: 0x" << std::hex << render << std::dec << std::endl;
+
+        auto devicePointer = EQ_ReadMemory<LPDIRECT3DDEVICE9>(render + EQ_OFFSET_CRender_Direct3DDevicePointer);
+        if (devicePointer != NULL)
+        {
+            std::cout << "CRender Device Pointer: 0x" << std::hex << devicePointer << std::dec << std::endl;
+        }
+    }
+
+    std::cout << "EQ_SIZE_CXWnd: 0x" << std::hex << EQ_SIZE_CXWnd << std::dec << std::endl;
+
+    std::cout << "EQ_SIZE_CSidlWnd: 0x" << std::hex << EQ_SIZE_CSidlWnd << std::dec << std::endl;
+
+    std::cout << "EQ_OFFSET_CMapViewWnd_LINES: 0x" << std::hex << EQ_OFFSET_CMapViewWnd_LINES << std::dec << std::endl;
+    std::cout << "EQ_OFFSET_CMapViewWnd_LABELS: 0x" << std::hex << EQ_OFFSET_CMapViewWnd_LABELS << std::dec << std::endl;
 
     if (g_LuaIsEnabled == true)
     {
@@ -197,7 +236,9 @@ DWORD WINAPI EQAPP_ThreadLoop(LPVOID param)
         Sleep(100);
     }
 
+#ifdef EQ_FEATURE_GUI
     EQAPP_GUI_Unload();
+#endif // EQ_FEATURE_GUI
 
     EQAPP_BoxChat_Unload();
     EQAPP_Detours_Unload();
@@ -226,8 +267,11 @@ DWORD WINAPI EQAPP_ThreadLoad(LPVOID param)
     EQAPP_LoadOptions();
     EQAPP_Lua_Load();
     EQAPP_Detours_Load();
+    EQAPP_AutoLogin_Load();
 
     EQ_SetNetStatus(true);
+
+    EQAPP_SetWindowTitle("EverQuest*");
 
     return 0;
 }

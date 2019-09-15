@@ -16,7 +16,7 @@ bool g_HUDIsEnabled = true;
 
 bool g_HUDDebugTextIsEnabled = false;
 
-fmt::MemoryWriter g_HUDText;
+std::stringstream g_HUDText;
 
 uint32_t g_HUDXDefault = 200;
 uint32_t g_HUDYDefault = 10;
@@ -122,7 +122,10 @@ void EQAPP_HUD_DrawDebugText()
     auto spawnGravityType = EQ_GetSpawnGravityType(targetSpawn);
     g_HUDText << "Gravity Type: " << spawnGravityType << "\n";
 
-    EQ_DrawText(g_HUDText.c_str(), g_HUDX, g_HUDY);
+    auto spawnIsInvitedToGroup = EQ_IsSpawnInvitedToGroup(targetSpawn);
+    g_HUDText << "Is Invited To Group: " << (int)spawnIsInvitedToGroup << "\n";
+
+    EQ_DrawText(g_HUDText.str().c_str(), g_HUDX, g_HUDY);
 }
 
 void EQAPP_HUD_AddText(const char* text)
@@ -132,6 +135,7 @@ void EQAPP_HUD_AddText(const char* text)
 
 void EQAPP_HUD_Execute()
 {
+    g_HUDText.str(std::string());
     g_HUDText.clear();
 
     g_HUDX = g_HUDXDefault;
@@ -203,6 +207,7 @@ void EQAPP_HUD_Execute()
         g_HUDText << "- Speed: " << g_SpeedMultiplier << "\n";
     }
 
+#ifdef EQ_FEATURE_BAZAAR
     if (g_BazaarBotIsEnabled == true)
     {
         g_HUDText << "- Bazaar Bot\n";
@@ -212,6 +217,7 @@ void EQAPP_HUD_Execute()
     {
         g_HUDText << "- Bazaar Filter\n";
     }
+#endif // EQ_FEATURE_BAZAAR
 
     if (g_AlwaysAttackIsEnabled == true)
     {
@@ -245,6 +251,16 @@ void EQAPP_HUD_Execute()
         g_HUDText << "- ESP Height Filter\n";
     }
 
+    if (g_ESPFindSpawnName.size() != 0)
+    {
+        g_HUDText << "- ESP Find Spawn Name: " << g_ESPFindSpawnName << " (" << g_ESPFindSpawnNameCount << ")\n";
+    }
+
+    if (g_ESPFindSpawnLastName.size() != 0)
+    {
+        g_HUDText << "- ESP Find Spawn Last Name: " << g_ESPFindSpawnLastName << " (" << g_ESPFindSpawnLastNameCount << ")\n";
+    }
+
     if (g_ESPShowSpawnIDIsEnabled == true)
     {
         g_HUDText << "- ESP Show Spawn ID\n";
@@ -265,6 +281,7 @@ void EQAPP_HUD_Execute()
         g_HUDText << "- ESP Show Doors\n";
     }
 
+#ifdef EQ_FEATURE_EQPlayer__FollowPlayerAI
     if (g_FollowAIBehindIsEnabled == true)
     {
         g_HUDText << "- Follow AI Behind\n";
@@ -274,12 +291,14 @@ void EQAPP_HUD_Execute()
     {
         g_HUDText << "- Follow AI Use Z-Axis\n";
     }
+#endif // EQ_FEATURE_EQPlayer__FollowPlayerAI
 
     if (g_ChangeHeightIsEnabled == true)
     {
         g_HUDText << "- Change Height\n";
     }
 
+#ifdef EQ_FEATURE_CEverQuest__StartCasting
     if (g_SpawnCastSpellIsEnabled == true)
     {
         g_HUDText << "- Spawn Cast Spell\n";
@@ -289,6 +308,7 @@ void EQAPP_HUD_Execute()
     {
         g_HUDText << "- Spawn Cast Spell Group Chat\n";
     }
+#endif // EQ_FEATURE_CEverQuest__StartCasting
 
     for (auto& script : g_LuaEventScriptList)
     {
@@ -319,5 +339,7 @@ void EQAPP_HUD_Execute()
         }
     }
 
-    EQ_DrawText(g_HUDText.c_str(), g_HUDX, g_HUDY);
+    g_HUDText << "- Group Average HP%: " << EQ_GetGroupAverageHPPercent() << "\n";
+
+    EQ_DrawText(g_HUDText.str().c_str(), g_HUDX, g_HUDY);
 }

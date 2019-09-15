@@ -3,10 +3,16 @@
 #include "eqapp.h"
 
 void EQAPP_Log(const char* text);
+void EQAPP_PrintTextToFile(const char* fileName, const char* text);
+void EQAPP_PrintTextToFileNoDuplicates(const char* fileName, const char* text);
 
 void EQAPP_PrintBool(const char* text, bool& b);
 void EQAPP_PrintDebugText(const char* functionName, const char* text);
-void EQAPP_ToggleDebugText();
+void EQAPP_DebugText_Toggle();
+void EQAPP_DebugText_On();
+void EQAPP_DebugText_Off();
+
+void EQAPP_PrintNumberToChat(uint32_t number);
 
 void EQAPP_EnableDebugPrivileges();
 DWORD EQAPP_GetModuleBaseAddress(DWORD processID, const wchar_t* moduleName);
@@ -36,13 +42,45 @@ bool EQAPP_UpdateClientWindowList();
 
 void EQAPP_Log(const char* text)
 {
-    std::stringstream fileName;
-    fileName << g_EQAppName << "/log.txt";
+    std::stringstream filePath;
+    filePath << g_EQAppName << "/log.txt";
 
     std::fstream file;
-    file.open(fileName.str().c_str(), std::ios::out | std::ios::app);
+    file.open(filePath.str().c_str(), std::ios::out | std::ios::app);
     file << "[" << __TIME__ << "] " << text << std::endl;
     file.close();
+}
+
+void EQAPP_PrintTextToFile(const char* fileName, const char* text)
+{
+    std::stringstream filePath;
+    filePath << g_EQAppName << "/" << fileName;
+
+    std::fstream file;
+    file.open(filePath.str().c_str(), std::ios::out | std::ios::app);
+    file << text << std::endl;
+    file.close();
+}
+
+void EQAPP_PrintTextToFileNoDuplicates(const char* fileName, const char* text)
+{
+    std::vector<std::string> fileContents;
+    EQAPP_ReadFileToList(fileName, fileContents, false);
+
+    for (auto& fileLine : fileContents)
+    {
+        if (fileLine.size() == 0)
+        {
+            continue;
+        }
+
+        if (fileLine == text)
+        {
+            return;
+        }
+    }
+
+    EQAPP_PrintTextToFile(fileName, text);
 }
 
 void EQAPP_PrintBool(const char* text, bool& b)
@@ -60,10 +98,31 @@ void EQAPP_PrintDebugText(const char* functionName, const char* text)
     std::cout << "[DEBUG] " << functionName << "(): " << text << std::endl;
 }
 
-void EQAPP_ToggleDebugText()
+void EQAPP_DebugText_Toggle()
 {
     EQ_ToggleBool(g_EQAppDebugTextIsEnabled);
     EQAPP_PrintBool("Debug Text", g_EQAppDebugTextIsEnabled);
+}
+
+void EQAPP_DebugText_On()
+{
+    if (g_EQAppDebugTextIsEnabled == false)
+    {
+        EQAPP_DebugText_Toggle();
+    }
+}
+
+void EQAPP_DebugText_Off()
+{
+    if (g_EQAppDebugTextIsEnabled == true)
+    {
+        EQAPP_DebugText_Toggle();
+    }
+}
+
+void EQAPP_PrintNumberToChat(uint32_t number)
+{
+    EQ_PrintTextToChat(fmt::format("{}", number).c_str());
 }
 
 void EQAPP_EnableDebugPrivileges()
@@ -559,6 +618,11 @@ void EQAPP_SetWindowTitle(const char* text)
 
 BOOL CALLBACK EQAPP_UpdateClientWindowList_EnumWindowsProc(HWND hwnd, LPARAM lParam)
 {
+    if (hwnd == EQ_GetWindow())
+    {
+        return TRUE;
+    }
+
     int windowTitleLength = GetWindowTextLengthA(hwnd) + 1;
 
     std::string windowTitle(windowTitleLength, L'\0');
@@ -566,9 +630,17 @@ BOOL CALLBACK EQAPP_UpdateClientWindowList_EnumWindowsProc(HWND hwnd, LPARAM lPa
 
     if (windowTitle.size() != 0)
     {
-        if (EQAPP_String_BeginsWith(windowTitle, "EQ: ") == true)
+        if (EQAPP_String_BeginsWith(windowTitle, "EverQuest") == true || EQAPP_String_BeginsWith(windowTitle, "EQ: ") == true)
         {
             g_EQAppClientWindowList.insert( {windowTitle, hwnd} );
+        }
+
+        for (auto& classShortName : EQ_CLASS_ShortName_Strings)
+        {
+            if (EQAPP_String_BeginsWith(windowTitle, classShortName.second))
+            {
+                g_EQAppClientWindowList.insert( {windowTitle, hwnd} );
+            }
         }
     }
 

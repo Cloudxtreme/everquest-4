@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef EQ_FEATURE_BAZAAR
+
 bool g_BazaarBotIsEnabled = false;
 
 EQApp::Timer g_BazaarBotFindItemsTimer = EQAPP_Timer_GetTimeNow();
@@ -79,8 +81,8 @@ void EQAPP_BazaarBot_FindItems_Execute()
         return;
     }
 
+    EQ_BazaarSearchWindow_ClickUpdateTradersButton();
     EQ_BazaarSearchWindow_ClickFindItemsButton();
-    ////EQ_BazaarSearchWindow_DoQuery();
 }
 
 void EQAPP_BazaarBot_BuyItems_Execute()
@@ -186,10 +188,10 @@ void EQAPP_BazaarBot_HandleEvent_CEverQuest__dsp_chat(std::string text, int text
                     std::cout << "[Bazaar Bot] itemName.size() == 0" << std::endl;
                 }
             }
-            else
-            {
+            //else
+            //{
                 ////std::cout << "[Bazaar Bot] listIndex == EQ_BAZAAR_SEARCH_LIST_INDEX_NULL" << std::endl;
-            }
+            //}
 
             bResult = false;
         }
@@ -206,6 +208,7 @@ void EQAPP_BazaarBot_HandleEvent_CEverQuest__dsp_chat(std::string text, int text
     {
         if (EQ_BazaarSearchWindow_IsOpen() == true)
         {
+            EQ_BazaarSearchWindow_ClickUpdateTradersButton();
             EQ_BazaarSearchWindow_ClickFindItemsButton();
         }
     }
@@ -230,3 +233,5 @@ bool EQAPP_BazaarBot_HandleEvent_CBazaarSearchWnd__AddItemToList(char* itemName,
 
     return bShouldAddItemToList;
 }
+
+#endif // EQ_FEATURE_BAZAAR

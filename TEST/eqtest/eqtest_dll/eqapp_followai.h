@@ -14,12 +14,19 @@ float g_FollowAIDistanceNPC    = 10.0f;
 float g_FollowAIDistanceCorpse = 10.0f;
 float g_FollowAIDistanceBehind = 5.0f;
 
+uint32_t g_FollowAISpawn = NULL;
+
 void EQAPP_FollowAI_Toggle();
 void EQAPP_FollowAI_On();
 void EQAPP_FollowAI_Off();
 void EQAPP_FollowAI_UseZAxis_Toggle();
+void EQAPP_FollowAI_UseZAxis_On();
+void EQAPP_FollowAI_UseZAxis_Off();
 void EQAPP_FollowAI_Behind_Toggle();
+void EQAPP_FollowAI_Behind_On();
+void EQAPP_FollowAI_Behind_Off();
 void EQAPP_FollowAI_Execute();
+bool EQAPP_FollowAI_HandleEvent_ExecuteCmd(uint32_t commandID, int isActive, int zero);
 
 void EQAPP_FollowAI_Toggle()
 {
@@ -29,6 +36,8 @@ void EQAPP_FollowAI_Toggle()
     if (g_FollowAIIsEnabled == false)
     {
         EQ_StopFollow();
+
+        g_FollowAISpawn = NULL;
     }
 }
 
@@ -57,10 +66,42 @@ void EQAPP_FollowAI_UseZAxis_Toggle()
     EQ_CenterView();
 }
 
+void EQAPP_FollowAI_UseZAxis_On()
+{
+    if (g_FollowAIUseZAxisIsEnabled == false)
+    {
+        EQAPP_FollowAI_UseZAxis_Toggle();
+    }
+}
+
+void EQAPP_FollowAI_UseZAxis_Off()
+{
+    if (g_FollowAIUseZAxisIsEnabled == true)
+    {
+        EQAPP_FollowAI_UseZAxis_Toggle();
+    }
+}
+
 void EQAPP_FollowAI_Behind_Toggle()
 {
     EQ_ToggleBool(g_FollowAIBehindIsEnabled);
     EQAPP_PrintBool("Follow AI Behind", g_FollowAIBehindIsEnabled);
+}
+
+void EQAPP_FollowAI_Behind_On()
+{
+    if (g_FollowAIBehindIsEnabled == false)
+    {
+        EQAPP_FollowAI_Behind_Toggle();
+    }
+}
+
+void EQAPP_FollowAI_Behind_Off()
+{
+    if (g_FollowAIBehindIsEnabled == true)
+    {
+        EQAPP_FollowAI_Behind_Toggle();
+    }
 }
 
 void EQAPP_FollowAI_Execute()
@@ -71,10 +112,68 @@ void EQAPP_FollowAI_Execute()
         return;
     }
 
-    auto followSpawn = EQ_GetSpawnFollowSpawn(playerSpawn);
+    if (playerSpawn != NULL)
+    {
+        auto playerHPCurrent = EQ_GetSpawnHPCurrent(playerSpawn);
+        if (playerHPCurrent <= 0)
+        {
+            g_FollowAISpawn = NULL;
+            EQ_SetAutoRun(false);
+
+            return;
+        }
+    }
+
+    //auto followSpawn = EQ_GetSpawnFollowSpawn(playerSpawn);
+    //if (followSpawn == NULL)
+    //{
+        //return;
+    //}
+
+    if (EQ_DoesSpawnExist(g_FollowAISpawn) == false)
+    {
+        return;
+    }
+
+    auto followSpawn = g_FollowAISpawn;
     if (followSpawn == NULL)
     {
         return;
+    }
+    else
+    {
+        if (EQ_IsAutoRunEnabled() == true)
+        {
+            auto targetSpawn = EQ_GetTargetSpawn();
+            if (targetSpawn == NULL || targetSpawn == playerSpawn)
+            {
+                g_FollowAISpawn = NULL;
+                EQ_SetAutoRun(false);
+
+                return;
+            }
+
+            if (targetSpawn != NULL)
+            {
+                auto targetType = EQ_GetSpawnType(targetSpawn);
+                if (targetType == EQ_SPAWN_TYPE_CORPSE)
+                {
+                    g_FollowAISpawn = NULL;
+                    EQ_SetAutoRun(false);
+
+                    return;
+                }
+
+                auto targetHPCurrent = EQ_GetSpawnHPCurrent(targetSpawn);
+                if (targetHPCurrent <= 0)
+                {
+                    g_FollowAISpawn = NULL;
+                    EQ_SetAutoRun(false);
+
+                    return;
+                }
+            }
+        }
     }
 
     EQAPP_FindPath_FollowPath_Off();
@@ -193,8 +292,6 @@ void EQAPP_FollowAI_Execute()
         EQ_GetSpawnGravityType(playerSpawn) == EQ_GRAVITY_TYPE_SWIMMING
     );
 
-    isPlayerFlyingLevitatingOrSwimming = false; // TODO: fix gravity type
-
     // follow while swimming or levitating
     if (g_FollowAIUseZAxisIsEnabled == true || EQ_IsSpawnSwimming(playerSpawn) == true || isPlayerFlyingLevitatingOrSwimming == true)
     {
@@ -217,4 +314,37 @@ void EQAPP_FollowAI_Execute()
             EQ_ExecuteCommand(EQ_EXECUTECMD_CENTERVIEW, 1);
         }
     }
+    else
+    {
+        if (EQ_GetCameraType() == EQ_CAMERA_TYPE_FIRST_PERSON)
+        {
+            // look forward
+            EQ_ExecuteCommand(EQ_EXECUTECMD_CENTERVIEW, 1);
+        }
+    }
+}
+
+bool EQAPP_FollowAI_HandleEvent_ExecuteCmd(uint32_t commandID, int isActive, int zero)
+{
+    if (isActive != 1)
+    {
+        return false;
+    }
+
+    if
+    (
+        commandID == EQ_EXECUTECMD_SIT_STAND  ||
+        commandID == EQ_EXECUTECMD_DUCK       ||
+        commandID == EQ_EXECUTECMD_JUMP       ||
+        commandID == EQ_EXECUTECMD_BACK       ||
+        commandID == EQ_EXECUTECMD_LEFT       ||
+        commandID == EQ_EXECUTECMD_RIGHT      ||
+        commandID == EQ_EXECUTECMD_AUTORUN
+    )
+    {
+        g_FollowAISpawn = NULL;
+        return false;
+    }
+
+    return false;
 }

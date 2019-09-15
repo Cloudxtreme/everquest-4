@@ -19,8 +19,24 @@ function OnInterpretCommand(commandText)
         return 1
     end
 
+    if commandText == "//DarkElf" then
+        local playerSpawn = EQ_GetPlayerSpawn()
+        if playerSpawn ~= 0 then
+            local playerRace = EQ_GetSpawnRace(playerSpawn)
+            if playerRace == EQ_RACE_OGRE or playerRace == EQ_RACE_TROLL or playerRace == EQ_RACE_BARBARIAN then
+                EQ_InterpretCommand("/useitem Guise of the Deceiver")
+            end
+        end
+        return 1
+    end
+
     if commandText == "//Drum" or commandText == "//Mount" then
         EQ_InterpretCommand("/useitem Glowing Black Drum")
+        return 1
+    end
+
+    if commandText == "//Dismount" then
+        EQ_InterpretCommand("/dismount")
         return 1
     end
 
@@ -67,12 +83,12 @@ function OnInterpretCommand(commandText)
     if commandText == "//MassGroupBuff" or commandText == "//MGB" then
         local playerSpawn = EQ_GetPlayerSpawn()
         if playerSpawn ~= 0 then
-            local spawnClass = EQ_GetSpawnClass(playerSpawn)
+            local playerClass = EQ_GetSpawnClass(playerSpawn)
 
-            if EQ_IsSpawnClassPriest(spawnClass) == true then
+            if EQ_IsSpawnClassPriest(playerClass) == true then
                 EQ_InterpretCommand("/alt activate 35")
                 return 1
-            elseif EQ_IsSpawnClassCaster(spawnClass) == true then
+            elseif EQ_IsSpawnClassCaster(playerClass) == true then
                 EQ_InterpretCommand("/alt activate 264")
                 return 1
             end
@@ -151,6 +167,35 @@ function OnInterpretCommand(commandText)
 
     if commandText == "//SummonResupplyAgent" or commandText == "//SRA" then
         EQ_InterpretCommand("/alt activate 8081")
+        return 1
+    end
+
+    if commandText == "//RemoveLevitation" or commandText == "//RemoveLev" then
+        EQ_InterpretCommand("//RemoveBuff Levitate")
+        EQ_InterpretCommand("//RemoveBuff Levitation")
+        EQ_InterpretCommand("//RemoveBuff Group Perfected Levitation")
+        EQ_InterpretCommand("//RemoveBuff Flight of Eagles")
+        EQ_InterpretCommand("//RemoveBuff Flight of Falcons")
+        EQ_InterpretCommand("//RemoveBuff Shauri's Levitation")
+        EQ_InterpretCommand("//RemoveBuff Shauri's Levitation I")
+        EQ_InterpretCommand("//RemoveBuff Shauri's Levitation II")
+        EQ_InterpretCommand("//RemoveBuff Shauri's Levitation III")
+        EQ_InterpretCommand("//RemoveBuff Selo's Song of Travel")
+        return 1
+    end
+
+    if commandText == "//RemoveCamouflage" or commandText == "//RemoveCamo" then
+        EQ_InterpretCommand("//RemoveBuff Camouflage")
+        EQ_InterpretCommand("//RemoveBuff Shared Perfected Camouflage")
+        EQ_InterpretCommand("//RemoveBuff Shauri's Sonorous Clouding")
+        EQ_InterpretCommand("//RemoveBuff Shauri's Sonorous Clouding I")
+        EQ_InterpretCommand("//RemoveBuff Shauri's Sonorous Clouding II")
+        EQ_InterpretCommand("//RemoveBuff Shauri's Sonorous Clouding III")
+        EQ_InterpretCommand("//RemoveBuff Selo's Song of Travel")
+        EQ_InterpretCommand("//RemoveBuff Cloak of Shadows")
+        EQ_InterpretCommand("//RemoveBuff Cloak of Shadows I")
+        EQ_InterpretCommand("//RemoveBuff Cloak of Shadows II")
+        EQ_InterpretCommand("//RemoveBuff Cloak of Shadows III")
         return 1
     end
 

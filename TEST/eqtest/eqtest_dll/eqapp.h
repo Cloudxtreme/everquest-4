@@ -19,6 +19,8 @@ volatile int g_EQAppShouldUnload = 0;
 
 int g_EQAppKillSwitchKey = VK_F12;
 
+int g_EQAppShowWindowsKey = VK_PRINT;
+
 bool g_EQAppIsInGame = false;
 
 std::random_device g_EQAppRandomDevice;
@@ -26,7 +28,7 @@ std::mt19937 g_EQAppRandomEngine(g_EQAppRandomDevice());
 
 bool g_EQAppDebugTextIsEnabled = false;
 
-std::map<std::string, HWND> g_EQAppClientWindowList;
+std::unordered_map<std::string, HWND> g_EQAppClientWindowList;
 
 HMODULE g_EQAppModule;
 

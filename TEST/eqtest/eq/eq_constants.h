@@ -52,19 +52,21 @@ const uint32_t EQ_FAR_CLIP_PLANE_MAX = 20;
 
 const float EQ_USE_DOOR_DISTANCE_DEFAULT    = 20.0f;
 
-#define EQ_NUM_HOTBARS                 11    // 10 + 1, potion belt was removed and replaced with another hotbar
-#define EQ_NUM_HOTBAR_BUTTONS          12
-#define EQ_NUM_SPELLS                  60000
-#define EQ_NUM_SPELL_GEMS              18
-#define EQ_NUM_SPELL_GEMS_IN_WINDOW    14    // CCastSpellWnd    CSPW_Spell%d
-#define EQ_NUM_BAGS                    10    // number of bags you can hold in your inventory
-#define EQ_NUM_BAG_SLOTS               40    // number of slots a bag can have
-#define EQ_NUM_GROUP_MEMBERS           6
-#define EQ_NUM_LONG_BUFFS              NUM_LONG_BUFFS
-#define EQ_NUM_SHORT_BUFFS             NUM_SHORT_BUFFS
-#define EQ_NUM_BUFF_SLOTS              NUM_BUFF_SLOTS
-#define EQ_NUM_AURAS                   2
-#define EQ_NUM_XTARGETS                20
+#define EQ_NUM_HOTBARS                       11    // 10 + 1, potion belt was removed and replaced with another hotbar
+#define EQ_NUM_HOTBAR_BUTTONS                12
+#define EQ_NUM_SPELLS                        TOTAL_SPELL_COUNT    // 60000
+#define EQ_NUM_SPELL_GEMS                    18
+#define EQ_NUM_SPELL_GEMS_IN_WINDOW          14    // CCastSpellWnd    CSPW_Spell%d
+#define EQ_NUM_BAGS                          10    // number of bags you can hold in your inventory
+#define EQ_NUM_BAG_SLOTS                     40    // number of slots a bag can have
+#define EQ_NUM_GROUP_MEMBERS                 6
+#define EQ_NUM_LONG_BUFFS                    NUM_LONG_BUFFS
+#define EQ_NUM_SHORT_BUFFS                   NUM_SHORT_BUFFS
+#define EQ_NUM_BUFF_SLOTS                    NUM_BUFF_SLOTS
+#define EQ_NUM_AURAS                         2
+#define EQ_NUM_XTARGETS                      20
+#define EQ_NUM_CHARACTERS_PER_ACCOUNT        8    // character select
+#define EQ_NUM_ALTERNATE_ABILITIES           NUM_ALT_ABILITIES
 
 #define EQ_BAZAAR_SEARCH_MAX_RESULTS_PER_TRADER 200
 #define EQ_BAZAAR_SEARCH_LIST_INDEX_NULL 0xFFFFFFFF // uint32_t
@@ -74,6 +76,14 @@ const float EQ_USE_DOOR_DISTANCE_DEFAULT    = 20.0f;
 #define EQ_SPELL_GEM_INDEX_NULL 0xFF
 
 #define EQ_SPELL_GEM_ICON_NULL 0xFFFFFFFF // uint32_t
+
+#define EQ_ALTERNATE_ABILITY_ID_NULL 0xFFFFFFFF // uint32_t
+
+#define EQ_ALTERNATE_ABILITY_TYPE_GENERAL      1
+#define EQ_ALTERNATE_ABILITY_TYPE_ARCHETYPE    2
+#define EQ_ALTERNATE_ABILITY_TYPE_CLASS        3
+#define EQ_ALTERNATE_ABILITY_TYPE_SPECIAL      4
+#define EQ_ALTERNATE_ABILITY_TYPE_FOCUS        5
 
 // CSpellGemWnd
 #define EQ_SPELL_GEM_STATE_READY_TO_CAST    0
@@ -88,24 +98,31 @@ const float EQ_USE_DOOR_DISTANCE_DEFAULT    = 20.0f;
 #define EQ_UPDATE_ITEM_SLOT_PRIMARY      7
 #define EQ_UPDATE_ITEM_SLOT_SECONDARY    8
 
-#define EQ_OFFSET_CEverQuest_GAME_STATE    0x5C8 // uint32_t, 1480 decimal    "Gamestate at crash = %d\n"
-#define EQ_OFFSET_CEverQuest_MOUSE_WHEEL_SCROLL_CAMERA_DISTANCE    0x5EC // float
+#define EQ_OFFSET_CEverQuest_GAME_STATE                            offsetof(EQData::_EVERQUEST, GameState)               // uint32_t, 1480 decimal    "Gamestate at crash = %d\n"
+#define EQ_OFFSET_CEverQuest_MOUSE_WHEEL_SCROLL_CAMERA_DISTANCE    offsetof(EQData::_EVERQUEST, TargetCameraDistance)    // float
 
 #define EQ_MOUSE_WHEEL_DELTA_DEFAULT    0       // not scrolling
 #define EQ_MOUSE_WHEEL_DELTA_MIN        -120    // scrolling down
 #define EQ_MOUSE_WHEEL_DELTA_MAX        120     // scrolling up
 
-#define EQ_GAME_STATE_IN_GAME    5
-#define EQ_GAME_STATE_NULL       0xFFFFFFFF // uint32_t
+#define EQ_GAME_STATE_CHARACTER_SELECT    1    // at character select
+#define EQ_GAME_STATE_LOADING_2           4    // to in game
+#define EQ_GAME_STATE_IN_GAME             5    // in game
+#define EQ_GAME_STATE_LOADING             6    // to character select
+#define EQ_GAME_STATE_LOADING_3           253  // right before in game
+#define EQ_GAME_STATE_NULL                0xFFFFFFFF // uint32_t
 
-#define EQ_OFFSET_CRender_Direct3DDevicePointer   0xEC8 // uint32_t pointer    LPDIRECT3DDEVICE9
+#define EQ_SIZE_CHARACTER_SELECT_NAME    64 // 0x40
 
-#define EQ_OFFSET_EQPlayerManager_FIRST_SPAWN    0x08
-#define EQ_OFFSET_EQPlayerManager_LAST_SPAWN     0x0C
+// class CRender
+#define EQ_OFFSET_CRender_VFTABLE                  0x00  // uint32_t pointer
+#define EQ_OFFSET_CRender_Direct3DDevicePointer    0xEC8 // uint32_t pointer    LPDIRECT3DDEVICE9
 
-#define EQ_OFFSET_CXWndManager_FONTS_ARRAY    0x11C    // add 0x04 to get the actual array of CTextureFont objects
+#define EQ_OFFSET_EQPlayerManager_FIRST_SPAWN    offsetof(EQData::_SPAWNMANAGER, FirstSpawn)
+#define EQ_OFFSET_EQPlayerManager_LAST_SPAWN     offsetof(EQData::_SPAWNMANAGER, LastSpawn)
 
-#define EQ_CXSTR_TEXT_MAX_LENGTH    4096
+#define EQ_OFFSET_CXWndManager_WINDOWS_ARRAY    offsetof(EQUIStructs::_CXWNDMGR, pWindows)      // add 0x04 to get the actual array of CXWnd objects
+#define EQ_OFFSET_CXWndManager_FONTS_ARRAY      offsetof(EQUIStructs::_CXWNDMGR, FontsArray)    // add 0x04 to get the actual array of CTextureFont objects
 
 #define EQ_CXSTR_ENCODING_ASCII      0
 #define EQ_CXSTR_ENCODING_UNICODE    1
@@ -134,8 +151,8 @@ const float EQ_USE_DOOR_DISTANCE_DEFAULT    = 20.0f;
 #define EQ_OFFSET_AURA_NAME        offsetof(EQData::_AURAINFO, Name)       // char[EQ_SIZE_AURA_NAME]
 #define EQ_OFFSET_AURA_SPAWN_ID    offsetof(EQData::_AURAINFO, SpawnID)    // uint32_t
 
-// class XTarget Manager
-#define EQ_OFFSET_XTargetManager_XTARGETS_ARRAY    0x04
+// class XTargetManager
+#define EQ_OFFSET_XTargetManager_XTARGETS_ARRAY    offsetof(ExtendedTargetList, XTargetSlots)
 #define EQ_OFFSET_XTargetManager_XTARGETS          0x08
 
 #define EQ_SIZE_XTARGET_NAME    0x40
@@ -158,7 +175,6 @@ const float EQ_USE_DOOR_DISTANCE_DEFAULT    = 20.0f;
 // class EQCharacter
 #define EQ_OFFSET_CHARACTER_XTargetManager     offsetof(EQData::_CHARINFO, pXTargetMgr)    // uint32_t pointer
 #define EQ_OFFSET_CHARACTER_GROUP              offsetof(EQData::_CHARINFO, pGroupInfo)     // uint32_t pointer
-#define EQ_OFFSET_CHARACTER_CI2                offsetof(EQData::_CHARINFO, pCI2)           // uint32_t pointer
 
 // struct CI2_INFO
 #define EQ_OFFSET_CI2_CHARINFO2    offsetof(EQData::_CI2_INFO, pCharInfo2)    // uint32_t pointer
@@ -222,7 +238,7 @@ const float EQ_USE_DOOR_DISTANCE_DEFAULT    = 20.0f;
 #define EQ_OFFSET_SPAWN_ENDURANCE_CURRENT          offsetof(EQData::_SPAWNINFO, EnduranceCurrent)    // uint32_t
 #define EQ_OFFSET_SPAWN_ENDURANCE_MAX              offsetof(EQData::_SPAWNINFO, EnduranceMax)        // uint32_t
 #define EQ_OFFSET_SPAWN_FOLLOW_SPAWN               offsetof(EQData::_SPAWNINFO, WhoFollowing)        // uint32_t pointer    struct _SPAWNINFO*   WhoFollowing; // NULL if autofollow off
-#define EQ_OFFSET_SPAWN_GRAVITY_TYPE               0x1FD4                                            // uint32_t
+#define EQ_OFFSET_SPAWN_GRAVITY_TYPE               offsetof(EQData::_SPAWNINFO, mPlayerPhysicsClient) + 0x12    // uint32_t
 #define EQ_OFFSET_SPAWN_PET_SPAWN_ID               offsetof(EQData::_SPAWNINFO, PetID)               // uint32_t
 #define EQ_OFFSET_SPAWN_PET_OWNER_SPAWN_ID         offsetof(EQData::_SPAWNINFO, MasterID)            // uint32_t
 #define EQ_OFFSET_SPAWN_ANONYMOUS_STATE            offsetof(EQData::_SPAWNINFO, Anon)                // uint32_t   // anonymous or roleplay
@@ -237,6 +253,7 @@ const float EQ_USE_DOOR_DISTANCE_DEFAULT    = 20.0f;
 #define EQ_OFFSET_SPAWN_IS_AFK                     offsetof(EQData::_SPAWNINFO, AFK)                 // uint32_t   // away from keyboard
 #define EQ_OFFSET_SPAWN_IS_LINKDEAD                offsetof(EQData::_SPAWNINFO, Linkdead)            // uint8_t
 #define EQ_OFFSET_SPAWN_IS_OFFLINE_MODE            offsetof(EQData::_SPAWNINFO, bOfflineMode)        // uint8_t
+#define EQ_OFFSET_SPAWN_IS_INVITED_TO_GROUP        offsetof(EQData::_SPAWNINFO, InvitedToGroup)      // uint8_t
 // ********************************************************************* //
 
 #define EQ_SIZE_SPAWN_NAME         64 // 0x40
@@ -324,17 +341,17 @@ std::unordered_map<uint32_t, std::string> EQ_COMBAT_STATE_Strings =
 
 #define EQ_SIZE_ACTOR_DEFINITION_NAME 0x40 // char[64]
 
-#define EQ_OFFSET_EQZoneInfo_PLAYER_NAME           0x00     // char[64]
-#define EQ_OFFSET_EQZoneInfo_ZONE_LONG_NAME        0xC0     // char[128]
-#define EQ_OFFSET_EQZoneInfo_ZONE_SHORT_NAME       0x2A0    // char[32]
-#define EQ_OFFSET_EQZoneInfo_ZONE_GRAVITY          0x204    // uint32_t
-#define EQ_OFFSET_EQZoneInfo_ZONE_ID               0x334    // uint32_t
-#define EQ_OFFSET_EQZoneInfo_FOG_ENABLED           0x1D6    // uint8_t // 0x00=Off 0xFF=On
-#define EQ_OFFSET_EQZoneInfo_FOG_COLOR_RED         0x1D7    // uint32_t ColorARGB
-#define EQ_OFFSET_EQZoneInfo_FOG_COLOR_GREEN       0x1DB    // uint32_t ColorARGB
-#define EQ_OFFSET_EQZoneInfo_FOG_COLOR_BLUE        0x1DF    // uint32_t ColorARGB
-#define EQ_OFFSET_EQZoneInfo_FOG_DISTANCE_BEGIN    0x1E4    // float[4]
-#define EQ_OFFSET_EQZoneInfo_FOG_DISTANCE_END      0x1F4    // float[4]
+#define EQ_OFFSET_EQZoneInfo_PLAYER_NAME           offsetof(EQData::_ZONEINFO, CharacterName)    // char[64]
+#define EQ_OFFSET_EQZoneInfo_ZONE_LONG_NAME        offsetof(EQData::_ZONEINFO, LongName)         // char[128]
+#define EQ_OFFSET_EQZoneInfo_ZONE_SHORT_NAME       0x2A0 // char[32]
+#define EQ_OFFSET_EQZoneInfo_ZONE_GRAVITY          offsetof(EQData::_ZONEINFO, ZoneGravity)    // float
+#define EQ_OFFSET_EQZoneInfo_ZONE_ID               offsetof(EQData::_ZONEINFO, ZoneID)         // uint32_t
+#define EQ_OFFSET_EQZoneInfo_FOG_ENABLED           offsetof(EQData::_ZONEINFO, FogOnOff)       // uint8_t // 0x00=Off 0xFF=On
+#define EQ_OFFSET_EQZoneInfo_FOG_COLOR_RED         offsetof(EQData::_ZONEINFO, FogRed)         // uint32_t ColorARGB
+#define EQ_OFFSET_EQZoneInfo_FOG_COLOR_GREEN       offsetof(EQData::_ZONEINFO, FogGreen)       // uint32_t ColorARGB
+#define EQ_OFFSET_EQZoneInfo_FOG_COLOR_BLUE        offsetof(EQData::_ZONEINFO, FogBlue)        // uint32_t ColorARGB
+#define EQ_OFFSET_EQZoneInfo_FOG_DISTANCE_BEGIN    offsetof(EQData::_ZONEINFO, FogStart)       // float[4]
+#define EQ_OFFSET_EQZoneInfo_FOG_DISTANCE_END      offsetof(EQData::_ZONEINFO, FogEnd)         // float[4]
 
 #define EQ_SIZE_EQZoneInfo_PLAYER_NAME        0x40    // char[64]
 #define EQ_SIZE_EQZoneInfo_ZONE_LONG_NAME     0x80    // char[128]
@@ -375,27 +392,27 @@ std::unordered_map<uint32_t, std::string> EQ_COMBAT_STATE_Strings =
 #define EQ_XTARGET_STATUS_UNKNOWN           4
 #define EQ_XTARGET_STATUS_NULL              0xFFFFFFFF // uint32_t
 
-#define EQ_OFFSET_Group_GROUP_MEMBERS          0x04    // uint32_t[6]
-#define EQ_OFFSET_Group_GROUP_MEMBER_1         0x04
-#define EQ_OFFSET_Group_GROUP_MEMBER_2         0x08
-#define EQ_OFFSET_Group_GROUP_MEMBER_3         0x0C
-#define EQ_OFFSET_Group_GROUP_MEMBER_4         0x10
-#define EQ_OFFSET_Group_GROUP_MEMBER_5         0x14
-#define EQ_OFFSET_Group_GROUP_MEMBER_6         0x18
-#define EQ_OFFSET_Group_GROUP_MEMBER_LEADER    0x1C
+#define EQ_OFFSET_Group_GROUP_MEMBERS          offsetof(EQData::_GROUPINFO, pMember)    // uint32_t[6]
+#define EQ_OFFSET_Group_GROUP_MEMBER_1         EQ_OFFSET_Group_GROUP_MEMBERS + 0x00
+#define EQ_OFFSET_Group_GROUP_MEMBER_2         EQ_OFFSET_Group_GROUP_MEMBERS + 0x04
+#define EQ_OFFSET_Group_GROUP_MEMBER_3         EQ_OFFSET_Group_GROUP_MEMBERS + 0x08
+#define EQ_OFFSET_Group_GROUP_MEMBER_4         EQ_OFFSET_Group_GROUP_MEMBERS + 0x0C
+#define EQ_OFFSET_Group_GROUP_MEMBER_5         EQ_OFFSET_Group_GROUP_MEMBERS + 0x10
+#define EQ_OFFSET_Group_GROUP_MEMBER_6         EQ_OFFSET_Group_GROUP_MEMBERS + 0x14
+#define EQ_OFFSET_Group_GROUP_MEMBER_LEADER    offsetof(EQData::_GROUPINFO, pLeader)
 
-#define EQ_OFFSET_GROUP_MEMBER_NAME                    0x04 // CXStr pointer
-#define EQ_OFFSET_GROUP_MEMBER_IS_MERCENARY            0x08 // uint8_t
-#define EQ_OFFSET_GROUP_MEMBER_MERCENARY_OWNER_NAME    0x0C // CXStr pointer
-#define EQ_OFFSET_GROUP_MEMBER_LEVEL                   0x10 // uint32_t
-#define EQ_OFFSET_GROUP_MEMBER_IS_OFFLINE              0x14 // uint8_t
-#define EQ_OFFSET_GROUP_MEMBER_IS_MAIN_TANK            0x1D // uint8_t
-#define EQ_OFFSET_GROUP_MEMBER_IS_MAIN_ASSIST          0x1E // uint8_t
-#define EQ_OFFSET_GROUP_MEMBER_IS_PULLER               0x1F // uint8_t
-#define EQ_OFFSET_GROUP_MEMBER_IS_MARK_NPC             0x20 // uint8_t
-#define EQ_OFFSET_GROUP_MEMBER_IS_MASTER_LOOTER        0x21 // uint8_t
-#define EQ_OFFSET_GROUP_MEMBER_ROLES_FLAGS             0x24 // uint32_t bitwise flags
-#define EQ_OFFSET_GROUP_MEMBER_SPAWN                   0x30 // uint32_t pointer
+#define EQ_OFFSET_GROUP_MEMBER_NAME                    offsetof(EQData::_GROUPMEMBER, pName)           // CXStr pointer
+#define EQ_OFFSET_GROUP_MEMBER_IS_MERCENARY            offsetof(EQData::_GROUPMEMBER, Mercenary)       // uint8_t
+#define EQ_OFFSET_GROUP_MEMBER_MERCENARY_OWNER_NAME    offsetof(EQData::_GROUPMEMBER, pOwner)          // CXStr pointer
+#define EQ_OFFSET_GROUP_MEMBER_LEVEL                   offsetof(EQData::_GROUPMEMBER, Level)           // uint32_t
+#define EQ_OFFSET_GROUP_MEMBER_IS_OFFLINE              offsetof(EQData::_GROUPMEMBER, Offline)         // uint8_t
+#define EQ_OFFSET_GROUP_MEMBER_IS_MAIN_TANK            offsetof(EQData::_GROUPMEMBER, MainTank)        // uint8_t
+#define EQ_OFFSET_GROUP_MEMBER_IS_MAIN_ASSIST          offsetof(EQData::_GROUPMEMBER, MainAssist)      // uint8_t
+#define EQ_OFFSET_GROUP_MEMBER_IS_PULLER               offsetof(EQData::_GROUPMEMBER, Puller)          // uint8_t
+#define EQ_OFFSET_GROUP_MEMBER_IS_MARK_NPC             offsetof(EQData::_GROUPMEMBER, MarkNpc)         // uint8_t
+#define EQ_OFFSET_GROUP_MEMBER_IS_MASTER_LOOTER        offsetof(EQData::_GROUPMEMBER, MasterLooter)    // uint8_t
+#define EQ_OFFSET_GROUP_MEMBER_ROLES_FLAGS             offsetof(EQData::_GROUPMEMBER, Roles)           // uint32_t bitwise flags
+#define EQ_OFFSET_GROUP_MEMBER_SPAWN                   offsetof(EQData::_GROUPMEMBER, pSpawn)          // uint32_t pointer
 
 #define EQ_GROUP_MEMBER_ROLES_FLAGS_MAIN_TANK        0x01
 #define EQ_GROUP_MEMBER_ROLES_FLAGS_MAIN_ASSIST      0x02
@@ -403,11 +420,8 @@ std::unordered_map<uint32_t, std::string> EQ_COMBAT_STATE_Strings =
 #define EQ_GROUP_MEMBER_ROLES_FLAGS_MARK_NPC         0x08
 #define EQ_GROUP_MEMBER_ROLES_FLAGS_MASTER_LOOTER    0x10
 
-#define EQ_OFFSET_GroupAggro_GROUP_MEMBER_AGGRO    0x08 // uint32_t[5], F2, F3, F4, F5, F6
-#define EQ_OFFSET_GroupAggro_PLAYER_AGGRO          0x78 // uint32_t, F1
-
-#define EQ_OFFSET_EQSwitchManager_NUM_SWITCHES    0x00 // uint32_t
-#define EQ_OFFSET_EQSwitchManager_FIRST_SWITCH    0x04 // uint32_t pointer, class EQSwitch
+#define EQ_OFFSET_EQSwitchManager_NUM_SWITCHES    offsetof(EQData::_DOORTABLE, NumEntries) // uint32_t
+#define EQ_OFFSET_EQSwitchManager_FIRST_SWITCH    offsetof(EQData::_DOORTABLE, pDoor) // uint32_t pointer, class EQSwitch
 
 #define EQ_SWITCH_KEY_ID_NULL    0xFFFFFFFF // uint32_t
 
@@ -427,25 +441,28 @@ std::unordered_map<uint32_t, std::string> EQ_COMBAT_STATE_Strings =
 #define EQ_SWITCH_TYPE_156                       156    // book rotating in a circle on table in potranquility
 #define EQ_SWITCH_TYPE_158                       158    // book of legends in the pok library, click shows book text
 
-#define EQ_OFFSET_EQSwitch_VFTABLE                0x00 // uint32_t pointer
-#define EQ_OFFSET_EQSwitch_OBJECT_TYPE            0x04 // uint8_t
-#define EQ_OFFSET_EQSwitch_INDEX                  0x05 // uint8_t
-#define EQ_OFFSET_EQSwitch_NAME                   0x06 // char[32]
-#define EQ_OFFSET_EQSwitch_TYPE                   0x26 // uint8_t
-#define EQ_OFFSET_EQSwitch_STATE                  0x27 // uint8_t
-#define EQ_OFFSET_EQSwitch_DEFAULT_Y              0x28 // float
-#define EQ_OFFSET_EQSwitch_DEFAULT_X              0x2C // float
-#define EQ_OFFSET_EQSwitch_DEFAULT_Z              0x30 // float
-#define EQ_OFFSET_EQSwitch_DEFAULT_HEADING        0x34 // float
-#define EQ_OFFSET_EQSwitch_DEFAULT_ANGLE          0x38 // float
-#define EQ_OFFSET_EQSwitch_Y                      0x44 // float
-#define EQ_OFFSET_EQSwitch_X                      0x48 // float
-#define EQ_OFFSET_EQSwitch_Z                      0x4C // float
-#define EQ_OFFSET_EQSwitch_HEADING                0x50 // float
-#define EQ_OFFSET_EQSwitch_ANGLE                  0x54 // float
-#define EQ_OFFSET_EQSwitch_KEY_ID                 0x70 // uint32_t
-#define EQ_OFFSET_EQSwitch_CActor                 0xA4 // uint32_t pointer
-#define EQ_OFFSET_EQSwitch_IS_USEABLE             0xD4 // uint8_t
+// class EQSwitch
+// EQData::_DOOR
+#define EQ_OFFSET_EQSwitch_VFTABLE                offsetof(EQData::_DOOR, vtable)              // uint32_t pointer
+#define EQ_OFFSET_EQSwitch_OBJECT_TYPE            offsetof(EQData::_DOOR, ObjType)             // uint8_t
+#define EQ_OFFSET_EQSwitch_INDEX                  offsetof(EQData::_DOOR, ID)                  // uint8_t
+#define EQ_OFFSET_EQSwitch_NAME                   offsetof(EQData::_DOOR, Name)                // char[32]
+#define EQ_OFFSET_EQSwitch_TYPE                   offsetof(EQData::_DOOR, Type)                // uint8_t
+#define EQ_OFFSET_EQSwitch_STATE                  offsetof(EQData::_DOOR, State)               // uint8_t
+#define EQ_OFFSET_EQSwitch_DEFAULT_Y              offsetof(EQData::_DOOR, DefaultY)            // float
+#define EQ_OFFSET_EQSwitch_DEFAULT_X              offsetof(EQData::_DOOR, DefaultX)            // float
+#define EQ_OFFSET_EQSwitch_DEFAULT_Z              offsetof(EQData::_DOOR, DefaultZ)            // float
+#define EQ_OFFSET_EQSwitch_DEFAULT_HEADING        offsetof(EQData::_DOOR, DefaultHeading)      // float
+#define EQ_OFFSET_EQSwitch_DEFAULT_ANGLE          offsetof(EQData::_DOOR, DefaultDoorAngle)    // float
+#define EQ_OFFSET_EQSwitch_Y                      offsetof(EQData::_DOOR, Y)                   // float
+#define EQ_OFFSET_EQSwitch_X                      offsetof(EQData::_DOOR, X)                   // float
+#define EQ_OFFSET_EQSwitch_Z                      offsetof(EQData::_DOOR, Z)                   // float
+#define EQ_OFFSET_EQSwitch_HEADING                offsetof(EQData::_DOOR, Heading)             // float
+#define EQ_OFFSET_EQSwitch_ANGLE                  offsetof(EQData::_DOOR, DoorAngle)           // float
+#define EQ_OFFSET_EQSwitch_KEY_ID                 offsetof(EQData::_DOOR, Key)                 // uint32_t
+#define EQ_OFFSET_EQSwitch_CActor                 offsetof(EQData::_DOOR, pSwitch)             // uint32_t pointer
+#define EQ_OFFSET_EQSwitch_IS_USEABLE             offsetof(EQData::_DOOR, bUsable)             // uint8_t
+#define EQ_OFFSET_EQSwitch_SHOULD_REMAIN_OPEN     offsetof(EQData::_DOOR, bRemainOpen)         // uint8_t
 
 #define EQ_SIZE_EQSwitch_NAME    32 // 0x20
 
@@ -501,7 +518,7 @@ std::unordered_map<uint32_t, std::string> EQ_STANDING_STATE_Strings =
 #define EQ_CAMERA_TYPE_FRONT           7
 
 #define EQ_OFFSET_CDisplay_CAMERA    0x118 // uint32_t pointer (CCamera)
-#define EQ_OFFSET_CDisplay_TIMER     0x154 // uint32_t
+#define EQ_OFFSET_CDisplay_TIMER     0x154 // uint32_t    offsetof(EQData::_CDISPLAY, TimeStamp)
 
 // class CCamera
 #define EQ_OFFSET_CCamera_VFTABLE                       0x00 // uint32_t pointer
@@ -528,9 +545,6 @@ const float EQ_CAMERA_FIELD_OF_VIEW_DRUID_MASK    = 60.0f;
 const float EQ_CAMERA_PITCH_DEFAULT    = -8.5f;      // center view or look forward
 const float EQ_CAMERA_PITCH_MIN        = -136.5f;    // look down
 const float EQ_CAMERA_PITCH_MAX        = 119.5f;     // look up
-
-// class CRender
-#define EQ_OFFSET_CRender_VFTABLE    0x00 // uint32_t pointer
 
 #define EQ_CHAT_TEXT_COLOR_WHITE_0           0
 #define EQ_CHAT_TEXT_COLOR_DEFAULT           1
@@ -744,7 +758,9 @@ std::unordered_map<uint32_t, std::string> EQ_CLASS_LongName_Strings =
     {EQ_CLASS_ENCHANTER,       "Enchanter"},
     {EQ_CLASS_BEASTLORD,       "Beastlord"},
     {EQ_CLASS_BERSERKER,       "Berserker"},
+
     {EQ_CLASS_MERCENARY,       "Mercenary"},
+
     {EQ_CLASS_BANKER,          "Banker"},
     {EQ_CLASS_MERCHANT,        "Merchant"},
 
@@ -777,7 +793,9 @@ std::unordered_map<uint32_t, std::string> EQ_CLASS_ShortName_Strings =
     {EQ_CLASS_ENCHANTER,       "ENC"},
     {EQ_CLASS_BEASTLORD,       "BST"},
     {EQ_CLASS_BERSERKER,       "BER"},
+
     {EQ_CLASS_MERCENARY,       "MERC"},
+
     ////{EQ_CLASS_BANKER,          "BNKR"},
     ////{EQ_CLASS_MERCHANT,        "MCHT"},
 };
@@ -845,7 +863,7 @@ namespace EQ
 /* 0x08 */ uint32_t Length;
 /* 0x0C */ uint32_t Encoding; // 0 = ASCII, 1 = Unicode
 /* 0x10 */ PCRITICAL_SECTION Lock;
-/* 0x14 */ char Text[1]; //EQ_CXSTR_TEXT_MAX_LENGTH
+/* 0x14 */ char Text[1];
     } CXStr, *CXStr_ptr;
 
     typedef struct _MouseState
@@ -860,11 +878,11 @@ namespace EQ
 
     typedef struct _MouseInfo2
     {
-        uint32_t X;
-        uint32_t Y;
-        uint32_t SpeedX;
-        uint32_t SpeedY;
-        uint32_t Scroll;
+        signed int X;
+        signed int Y;
+        signed int SpeedX;
+        signed int SpeedY;
+        signed int Scroll;
     } MouseInfo2, *MouseInfo2_ptr;
 
     typedef struct _ColorARGB
